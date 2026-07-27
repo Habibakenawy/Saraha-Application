@@ -63,7 +63,7 @@ UserSchema.virtual("username").set(function(value){
     const [firstName,lastName] = value.split(' ') || [];
     this.set({firstName,lastName});
 }).get(function(){
-    return this.firstname + " " + this.lastName;
+    return this.firstName + " " + this.lastName;
 })
 
 
