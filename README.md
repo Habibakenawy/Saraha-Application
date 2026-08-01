@@ -94,7 +94,7 @@ SARAHA APPLICATION
 
 ## 📅 Agile Development Roadmap
 
-### 🏁 Sprint 1 (`02/04/2026 – 08/02/2026`)
+### 🏁 Sprint 1
 
 * [x] Formulate Software Development Life Cycle (**SDLC**) workflows.
 * [x] Configure production-ready standard **Folder Structure**.
@@ -102,7 +102,7 @@ SARAHA APPLICATION
 * [x] Implement initial user registration via **Signup / Login**.
 * [x] Implement secure cryptographic **Hashing** and payload **Encryption** libraries.
 
-### 🏃 Sprint 2 (`11/02/2026 – 15/02/2026`)
+### 🏃 Sprint 2
 
 * [x] Implement user **Profile** viewing and mutation systems.
 * [x] Build stateless session handling via securely signed JSON Web **Tokens**.
@@ -110,7 +110,7 @@ SARAHA APPLICATION
 * [x] Establish strict request body schema **Validation**.
 * [x] Integrate background automated mail dispatch services (**Send Email**).
 
-### 🚀 Sprint 3 (`18/02/2026 – 22/02/2026`)
+### 🚀 Sprint 3
 
 * [ ] Connect external federation services via **Google account** integration.
 * [ ] Implement cloud storage attachment architectures (**File upload**).
