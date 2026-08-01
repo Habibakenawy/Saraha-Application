@@ -9,8 +9,8 @@ router.post("/signup", async (req, res, next) => {
 
 
 router.get("/login", async (req, res, next) => {
-    const result = await login(req.body)
-    return successResponse({res,status:200,message:"User Logged Successfully",data:result})
+    const credentials = await login(req.body)
+    return successResponse({res,status:200,message:"User Logged Successfully",data:{credentials}})
 })
 
 
