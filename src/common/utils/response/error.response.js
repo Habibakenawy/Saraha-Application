@@ -25,3 +25,7 @@ export const NotFoundException = ({message = "NotFound",extra}) =>{
 export const UnauthorizedException = ({message = "Unauthorized",extra}) =>{
     return ErrorException({message,status:401,extra})
 }
+
+export const BadRequestException = ({message = "Bad request",extra}) =>{
+    return ErrorException({message,status:400,extra})
+}

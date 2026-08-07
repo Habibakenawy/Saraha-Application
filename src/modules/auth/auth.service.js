@@ -1,5 +1,6 @@
 import { UserModel, findOne, create, createOne } from "../../DB/index.js";
 import { hashApproach } from "../../common/enum/security.enum.js";
+import { createLoginCredentials } from "../../common/utils/index.js";
 import {
   compareHash,
   ConflictException,
@@ -48,29 +49,6 @@ export const login = async (inputs,issuer) => {
     return NotFoundException({ message: "Invalid Login Credentials" });
   }
   user.phone = await generateDecryption(user.phone);
-  const access_token = jwt.sign(
-    { sub: user._id, extra: 250 }, //payload
-    USER_ACCESS_TOKEN_SECRET_KEY,
-    {  //options
-  //  subject:user.id //lazm string w lw ktbt sub fo2 mktbsh hna subject tany
-   // ,
-    issuer,//mean tl3le el token
-    audience:['web','mobile'] //meen y2dr yshofha 
-    ,expiresIn: 1800//sanya which is equal nos sa3a
-    }
-  );
+ return await createLoginCredentials(user,issuer);
 
-
-    const refresh_token = jwt.sign(
-    { sub: user._id, extra: 250 }, //payload
-    USER_REFRESH_TOKEN_SECRET_KEY,
-    {  //options
-  // subject:user.id lazm string w lw ktbt sub fo2 mktbsh hna subject tany
-  //  ,
-    issuer,//mean tl3le el token
-    audience:['web','mobile'] //meen y2dr yshofha 
-    ,expiresIn: 1800//sanya which is equal nos sa3a
-    }
-  );
-  return {access_token,refresh_token};
 };
