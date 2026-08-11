@@ -5,13 +5,13 @@ import { findOne } from "../../DB/DB.repository.js"
 import { UserModel } from "../../DB/index.js"
 import jwt from 'jsonwebtoken'
 
-export const profile   =  async (token)=>{
-   const account  = await decodeToken({token})
-     return account;
+export const profile   =  async (user)=>{
+
+     return user;
 }
 
-export const rotateToken   =  async (token,issuer)=>{
-   const user = await decodeToken({token,tokenType:TokenTypeEnum.Refresh})
+export const rotateToken   =  async (user,issuer)=>{
+
      return createLoginCredentials(user,issuer);
 }
 
