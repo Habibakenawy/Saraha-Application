@@ -29,3 +29,7 @@ export const UnauthorizedException = ({message = "Unauthorized",extra}) =>{
 export const BadRequestException = ({message = "Bad request",extra}) =>{
     return ErrorException({message,status:400,extra})
 }
+
+export const ForbiddenException = ({message = "Forbidden request",extra}) =>{
+    return ErrorException({message,status:403,extra})
+}
