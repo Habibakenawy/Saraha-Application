@@ -16,8 +16,8 @@ router.get("/login", async (req, res, next) => {
 
 router.post("/signup/gmail", async (req, res, next) => {
     console.log("Incoming Body:", req.body);
-    const result = await signupWithGoogle(req.body.idToken,`${req.protocol}://${req.host}`)
-    return successResponse({res,status:201,message:"User Created Successfully",data:result})
+    const {status,credentials} = await signupWithGoogle(req.body.idToken,`${req.protocol}://${req.host}`)
+    return successResponse({res,status:status,data:{...credentials}})
 })
 
 

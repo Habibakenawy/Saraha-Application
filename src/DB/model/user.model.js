@@ -30,7 +30,9 @@ const UserSchema = new mongoose.Schema(
     },
       password:{
         type:String,
-        required:true
+        required:function(){
+          this.provider ==  ProviderEnum.System
+        }
     },
     phone:String,
     confirmEmail:Date,
