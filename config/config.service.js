@@ -28,5 +28,8 @@ export const SYSTEM_ACCESS_TOKEN_SECRET_KEY = process.env.SYSTEM_ACCESS_TOKEN_SE
 export const SYSTEM_REFRESH_TOKEN_SECRET_KEY = process.env.SYSTEM_REFRESH_TOKEN_SECRET_KEY;
 export const ACCESS_TOKEN_EXPIRES_IN= parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN);
 export const REFRESH_TOKEN_EXPIRES_IN= parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN);
+export const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
+
 
 console.log({SALT_ROUND});

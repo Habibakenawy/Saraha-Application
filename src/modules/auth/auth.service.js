@@ -1,6 +1,10 @@
-import { UserModel, findOne, create, createOne } from "../../DB/index.js";
+import { UserModel, findOne, create, createOne ,updateOne} from "../../DB/index.js";
 import { hashApproach } from "../../common/enum/security.enum.js";
 import { BadRequestException, createLoginCredentials } from "../../common/utils/index.js";
+import { Resend } from 'resend';
+import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
+
 import {
   compareHash,
   ConflictException,
@@ -19,6 +23,18 @@ export const signup = async (inputs) => {
   if (userExists) {
     return ConflictException({ message: "This email already exists" });
   }
+
+    // 2. Generate a secure 6-digit OTP
+  const rawOtp = crypto.randomInt(100000, 999999).toString();
+
+  // 3. Hash OTP before saving to database
+  const saltRounds = 10;
+  const hashedOtp = await bcrypt.hash(rawOtp, saltRounds);
+
+  // Set expiration (5 minutes from now)
+  const otpExpiresIn = new Date(Date.now() + 5 * 60 * 1000);
+
+
   const user = await createOne({
     model: UserModel,
     data: {
@@ -29,9 +45,20 @@ export const signup = async (inputs) => {
         approach: hashApproach.bcrypt,
       }),
       phone: await generateEncryption(phone),
+      isEmailVerified: false,
+      otpCode: hashedOtp,
+      otpExpiresIn
     },
   });
-  return user;
+
+  // 5. Dispatch plain-text OTP via Resend
+  await sendOtpEmail(email, rawOtp);
+
+  return {
+    user,
+    status: 201,
+    message: 'User registered. Verification code sent to email.'
+  };
 };
 
 export const login = async (inputs,issuer) => {
@@ -123,4 +150,74 @@ export const loginWithGoogle = async (idToken,issuer) => {
     console.error("Google Auth Verification Error:", error.message);
     throw error;
   }
+};
+
+
+
+export const sendOtpEmail = async (toEmail, otp) => {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { data, error } = await resend.emails.send({
+    // Resend's default testing domain (send to your own registered email during test)
+    // In production, replace with: 'noreply@yourdomain.com'
+    from: 'onboarding@resend.dev',
+    to: toEmail,
+    subject: 'Your Verification Code',
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Verify Your Email</h2>
+        <p>Use the code below to complete your registration:</p>
+        <h1 style="background: #f4f4f4; padding: 12px; text-align: center; letter-spacing: 6px; color: #333;">${otp}</h1>
+        <p>This code will expire in <strong>5 minutes</strong>.</p>
+      </div>
+    `
+  });
+
+  if (error) {
+    throw new Error(`Failed to send email: ${error.message}`);
+  }
+
+  return data;
+};
+
+
+
+
+export const verifyEmailOtp = async (data) => {
+  const {email,submittedOtp} = data;
+  const user = await findOne({
+    model: UserModel,
+    filter: { email: email.toLowerCase() }
+  });
+
+  // 1. Validate user and OTP existence
+  if (!user || !user.otpCode || !user.otpExpiresIn) {
+    throw new Error('Invalid verification request');
+  }
+
+  // 2. Check expiration
+  if (new Date() > new Date(user.otpExpiresIn)) {
+    throw new Error('Verification code has expired. Please request a new one.');
+  }
+
+  // 3. Compare submitted OTP against the hashed OTP in database
+  const isMatch = await bcrypt.compare(submittedOtp, user.otpCode);
+  if (!isMatch) {
+    throw new Error('Invalid verification code');
+  }
+
+  // 4. Update user status and wipe OTP fields
+  await updateOne({
+    model: UserModel,
+    filter: { _id: user._id },
+    data: {
+      isEmailVerified: true,
+      otpCode: null,
+      otpExpiresIn: null
+    }
+  });
+
+  return {
+    status: 200,
+    message: 'Email verified successfully. You can now log in.'
+  };
 };

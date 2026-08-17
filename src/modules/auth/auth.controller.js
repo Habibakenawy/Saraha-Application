@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import {  login, signup,signupWithGoogle} from './auth.service.js';
+import {  login, signup,signupWithGoogle,verifyEmailOtp} from './auth.service.js';
 import {successResponse} from './../../common/utils/response/index.js'
 const router = Router(); 
 router.post("/signup", async (req, res, next) => {
@@ -20,6 +20,9 @@ router.post("/signup/gmail", async (req, res, next) => {
     return successResponse({res,status:status,data:{...credentials}})
 })
 
-
+router.post("/verify-otp", async (req, res, next) => {
+    const response = await verifyEmailOtp(req.body)
+    return successResponse({res,status:200,message:"User Logged Successfully",data:response})
+})
 
 export default router
