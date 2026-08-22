@@ -5,7 +5,8 @@ export const globalErrorHandler = (error, req, res, next) => {
         return res.status(status).json({
             error_message:
                 status == 500 ? 'something went wrong' : error.message ?? 'something went wrong',
-            stack: NODE_ENV == "development" ? error.stack : undefined
+            stack: NODE_ENV == "development" ? error.stack : undefined,
+            extra:error?.cause?.extra || undefined
         })
     
 }
